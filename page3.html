@@ -1,0 +1,40 @@
+<script>
+    // Set your actual Stripe public key here
+    var stripe = Stripe('pk_test_XXXXXXXXXXXXXXXXXXXXXX'); // Replace with your actual public key
+
+    // Create an instance of Elements
+    var elements = stripe.elements();
+
+    // Create an instance of the card Element.
+    var card = elements.create('card');
+
+    // Add an instance of the card Element into the `card-element` div.
+    card.mount('#card-element');
+
+    // Handle real-time validation errors from the card Element.
+    card.addEventListener('change', function (event) {
+        var displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+
+    // Handle form submission.
+    document.getElementById('submit-payment').addEventListener('click', function () {
+        stripe.createToken(card).then(function (result) {
+            if (result.error) {
+                // Inform the user if there was an error.
+                var errorElement = document.getElementById('card-errors');
+                errorElement.textContent = result.error.message;
+            } else {
+                // Send the token to your server to process the payment.
+                console.log(result.token);
+                alert('Payment successful!'); // Replace this with your own success handling logic
+            }
+        });
+    });
+</script>
+
+<!-- ... (Remaining HTML content) ... -->
